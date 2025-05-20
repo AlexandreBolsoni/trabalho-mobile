@@ -5,7 +5,7 @@ import '../models/profissional.dart';
 class ProfissionalService {
   static const String baseUrl = 'http://127.0.0.1:8000/api/profissionais/';
 
-  Future<List<Profissional>> getProfissionais() async {
+  static Future<List<Profissional>> getProfissionais() async {
     final response = await http.get(Uri.parse(baseUrl));
     if (response.statusCode == 200) {
       final List data = json.decode(response.body);
@@ -15,7 +15,7 @@ class ProfissionalService {
     }
   }
 
-  Future<void> addProfissional(Profissional profissional) async {
+  static Future<void> addProfissional(Profissional profissional) async {
     final response = await http.post(
       Uri.parse(baseUrl),
       headers: {'Content-Type': 'application/json'},
@@ -26,7 +26,7 @@ class ProfissionalService {
     }
   }
 
-  Future<void> updateProfissional(int id, Profissional profissional) async {
+  static Future<void> updateProfissional(int id, Profissional profissional) async {
     final response = await http.put(
       Uri.parse('$baseUrl$id/'),
       headers: {'Content-Type': 'application/json'},
@@ -37,7 +37,7 @@ class ProfissionalService {
     }
   }
 
-  Future<void> deleteProfissional(int id) async {
+  static Future<void> deleteProfissional(int id) async {
     final response = await http.delete(Uri.parse('$baseUrl$id/'));
     if (response.statusCode != 204) {
       throw Exception('Erro ao excluir profissional');

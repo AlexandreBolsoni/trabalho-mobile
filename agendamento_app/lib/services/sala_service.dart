@@ -5,7 +5,7 @@ import '../models/sala.dart';
 class SalaService {
   static const String baseUrl = 'http://127.0.0.1:8000/api/salas/';
 
-  Future<List<Sala>> getSalas() async {
+  static Future<List<Sala>> getSalas() async {
     final response = await http.get(Uri.parse(baseUrl));
     if (response.statusCode == 200) {
       final List data = json.decode(response.body);
@@ -15,7 +15,7 @@ class SalaService {
     }
   }
 
-  Future<void> addSala(Sala sala) async {
+  static Future<void> addSala(Sala sala) async {
     final response = await http.post(
       Uri.parse(baseUrl),
       headers: {'Content-Type': 'application/json'},
@@ -26,7 +26,7 @@ class SalaService {
     }
   }
 
-  Future<void> updateSala(int id, Sala sala) async {
+  static Future<void> updateSala(int id, Sala sala) async {
     final response = await http.put(
       Uri.parse('$baseUrl$id/'),
       headers: {'Content-Type': 'application/json'},
@@ -37,7 +37,7 @@ class SalaService {
     }
   }
 
-  Future<void> deleteSala(int id) async {
+  static Future<void> deleteSala(int id) async {
     final response = await http.delete(Uri.parse('$baseUrl$id/'));
     if (response.statusCode != 204) {
       throw Exception('Erro ao excluir sala');
