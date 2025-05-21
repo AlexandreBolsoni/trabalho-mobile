@@ -15,16 +15,7 @@ class AgendamentoService {
     }
   }
 
-  static Future<void> addAgendamento(Agendamento agendamento) async {
-    final response = await http.post(
-      Uri.parse(baseUrl),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode(agendamento.toJson()),
-    );
-    if (response.statusCode != 201) {
-      throw Exception('Erro ao adicionar agendamento');
-    }
-  }
+ 
 
   static Future<void> createAgendamento(Agendamento agendamento) async {
     final response = await http.post(

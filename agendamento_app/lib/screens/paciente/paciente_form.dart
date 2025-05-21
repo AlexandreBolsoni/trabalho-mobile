@@ -5,7 +5,7 @@ import '../../services/paciente_service.dart';
 class PacienteFormScreen extends StatefulWidget {
   final Paciente? paciente;
 
-  PacienteFormScreen({this.paciente});
+  const PacienteFormScreen({super.key, this.paciente});
 
   @override
   _PacienteFormScreenState createState() => _PacienteFormScreenState();

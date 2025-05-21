@@ -3,6 +3,8 @@ import 'agendamento_form.dart';
 import '../../services/agendamento_service.dart';
 
 class AgendamentoListPage extends StatefulWidget {
+  const AgendamentoListPage({super.key});
+
   @override
   _AgendamentoListPageState createState() => _AgendamentoListPageState();
 }

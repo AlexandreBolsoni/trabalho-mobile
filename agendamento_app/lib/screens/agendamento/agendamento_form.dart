@@ -9,7 +9,7 @@ import '../../services/sala_service.dart';
 class AgendamentoFormPage extends StatefulWidget {
   final Map? agendamento;
 
-  AgendamentoFormPage({this.agendamento});
+  const AgendamentoFormPage({super.key, this.agendamento});
 
   @override
   _AgendamentoFormPageState createState() => _AgendamentoFormPageState();
