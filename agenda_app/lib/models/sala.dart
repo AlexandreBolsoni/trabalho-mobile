@@ -10,12 +10,13 @@ class Sala {
   });
 
   factory Sala.fromJson(Map<String, dynamic> json) {
-    return Sala(
-      id: json['id'],
-      nomeSala: json['nome_sala'],
-      andar: json['andar'],
-    );
-  }
+  return Sala(
+    id: json['id'],
+    nomeSala: json['nome_sala'] ?? '',  // <-- aqui evita o erro
+    andar: json['andar'] ?? 0,
+  );
+}
+
 
   Map<String, dynamic> toJson() {
     return {

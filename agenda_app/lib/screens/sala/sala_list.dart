@@ -78,8 +78,8 @@ class _SalaListState extends State<SalaList> {
               borderRadius: BorderRadius.circular(16),
             ),
             child: ListTile(
-              title: Text(s['nome']),
-              subtitle: Text('Localização: ${s['localizacao']}'),
+              title: Text(s['nome_sala'] ?? ''),
+              subtitle: Text('Andar: ${s['andar'] ?? 'N/A'}'),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -89,7 +89,7 @@ class _SalaListState extends State<SalaList> {
                   ),
                   IconButton(
                     icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed: () => excluirSala(s['id_sala']),
+                    onPressed: () => excluirSala(s['id']),
                   ),
                 ],
               ),

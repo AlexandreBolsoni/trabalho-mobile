@@ -3,7 +3,8 @@ import 'package:http/http.dart' as http;
 import '../models/paciente.dart';
 
 class PacienteService {
-  static const String baseUrl = 'http://127.0.0.1:8000/api/pacientes/';
+
+static const String baseUrl = 'http://127.0.0.1:8000/api/pacientes/';
 
   static Future<List<Paciente>> fetchPacientes() async {
     final response = await http.get(Uri.parse(baseUrl));
@@ -15,11 +16,14 @@ class PacienteService {
     }
   }
 
-  static Future<void> addPaciente(Paciente paciente) async {
-    await http.post(Uri.parse(baseUrl),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(paciente.toJson()));
-  }
+static Future<void> addPaciente(Paciente paciente) async {
+  await http.post(
+    Uri.parse(baseUrl),
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode(paciente.toJson()),
+  );
+}
+
 
   static Future<void> updatePaciente(int id, Paciente paciente) async {
     await http.put(Uri.parse('$baseUrl$id/'),

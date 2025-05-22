@@ -1,4 +1,5 @@
 import 'package:agendamento_app/models/agendamento.dart';
+import 'package:agendamento_app/models/profissional.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../services/agendamento_service.dart';
@@ -25,7 +26,7 @@ class _AgendamentoFormPageState extends State<AgendamentoFormPage> {
   String status = 'Pendente';
 
   List pacientes = [];
-  List profissionais = [];
+  List<Profissional> profissionais = [];
   List salas = [];
 
   @override
@@ -42,7 +43,14 @@ class _AgendamentoFormPageState extends State<AgendamentoFormPage> {
         hour: int.parse(a['hora'].split(":")[0]),
         minute: int.parse(a['hora'].split(":")[1]),
       );
-      status = a['status'] ?? 'Pendente';
+      final agStatus = a['status']?.toString().toLowerCase() ?? 'pendente';
+      if (agStatus == 'confirmado') {
+        status = 'Confirmado';
+      } else if (agStatus == 'cancelado') {
+        status = 'Cancelado';
+      } else {
+        status = 'Pendente';
+      }
     }
   }
 
@@ -66,7 +74,7 @@ class _AgendamentoFormPageState extends State<AgendamentoFormPage> {
     };
 
     if (widget.agendamento == null) {
-     await AgendamentoService.createAgendamento(Agendamento.fromJson(dados));
+      await AgendamentoService.createAgendamento(Agendamento.fromJson(dados));
     } else {
       await AgendamentoService.updateAgendamento(
         widget.agendamento!['id'],
@@ -105,100 +113,89 @@ class _AgendamentoFormPageState extends State<AgendamentoFormPage> {
               : 'Editar Agendamento',
         ),
       ),
-      body:
-          pacientes.isEmpty || profissionais.isEmpty || salas.isEmpty
-              ? Center(child: CircularProgressIndicator())
-              : Padding(
-                padding: EdgeInsets.all(16),
-                child: Form(
-                  key: _formKey,
-                  child: ListView(
-                    children: [
-                      DropdownButtonFormField(
-                        value: pacienteId,
-                        items:
-                            pacientes.map<DropdownMenuItem<int>>((p) {
-                              return DropdownMenuItem(
-                                value: p['id'],
-                                child: Text(p['nome']),
-                              );
-                            }).toList(),
-                        onChanged:
-                            (value) => setState(() => pacienteId = value),
-                        decoration: InputDecoration(labelText: 'Paciente'),
-                        validator:
-                            (value) =>
-                                value == null ? 'Selecione um paciente' : null,
+      body: pacientes.isEmpty || profissionais.isEmpty || salas.isEmpty
+          ? Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: EdgeInsets.all(16),
+              child: Form(
+                key: _formKey,
+                child: ListView(
+                  children: [
+                    DropdownButtonFormField(
+                      value: pacienteId,
+                      items: pacientes.map<DropdownMenuItem<int>>((p) {
+                        return DropdownMenuItem(
+                          value: p.id,
+                          child: Text(p.nome),
+                        );
+                      }).toList(),
+                      onChanged: (value) => setState(() => pacienteId = value),
+                      decoration: InputDecoration(labelText: 'Paciente'),
+                      validator: (value) =>
+                          value == null ? 'Selecione um paciente' : null,
+                    ),
+                    DropdownButtonFormField(
+                      value: profissionalId,
+                      items: profissionais.map<DropdownMenuItem<int>>((p) {
+                        return DropdownMenuItem(
+                          value: p.id,
+                          child: Text(p.nome),
+                        );
+                      }).toList(),
+                      onChanged: (value) =>
+                          setState(() => profissionalId = value),
+                      decoration: InputDecoration(labelText: 'Profissional'),
+                      validator: (value) =>
+                          value == null ? 'Selecione um profissional' : null,
+                    ),
+                    DropdownButtonFormField(
+                      value: salaId,
+                      items: salas.map<DropdownMenuItem<int>>((s) {
+                        return DropdownMenuItem(
+                          value: s['id'],
+                          child: Text(s['nomeSala']),
+                        );
+                      }).toList(),
+                      onChanged: (value) => setState(() => salaId = value),
+                      decoration: InputDecoration(labelText: 'Sala'),
+                      validator: (value) =>
+                          value == null ? 'Selecione uma sala' : null,
+                    ),
+                    ListTile(
+                      title: Text(
+                        data == null
+                            ? 'Selecionar Data'
+                            : 'Data: ${DateFormat('dd/MM/yyyy').format(data!)}',
                       ),
-                      DropdownButtonFormField(
-                        value: profissionalId,
-                        items:
-                            profissionais.map<DropdownMenuItem<int>>((p) {
-                              return DropdownMenuItem(
-                                value: p['id'],
-                                child: Text(p['nome']),
-                              );
-                            }).toList(),
-                        onChanged:
-                            (value) => setState(() => profissionalId = value),
-                        decoration: InputDecoration(labelText: 'Profissional'),
-                        validator:
-                            (value) =>
-                                value == null
-                                    ? 'Selecione um profissional'
-                                    : null,
+                      trailing: Icon(Icons.calendar_today),
+                      onTap: _selecionarData,
+                    ),
+                    ListTile(
+                      title: Text(
+                        hora == null
+                            ? 'Selecionar Hora'
+                            : 'Hora: ${hora!.format(context)}',
                       ),
-                      DropdownButtonFormField(
-                        value: salaId,
-                        items:
-                            salas.map<DropdownMenuItem<int>>((s) {
-                              return DropdownMenuItem(
-                                value: s['id'],
-                                child: Text(s['nome_sala']),
-                              );
-                            }).toList(),
-                        onChanged: (value) => setState(() => salaId = value),
-                        decoration: InputDecoration(labelText: 'Sala'),
-                        validator:
-                            (value) =>
-                                value == null ? 'Selecione uma sala' : null,
-                      ),
-                      ListTile(
-                        title: Text(
-                          data == null
-                              ? 'Selecionar Data'
-                              : 'Data: ${DateFormat('dd/MM/yyyy').format(data!)}',
-                        ),
-                        trailing: Icon(Icons.calendar_today),
-                        onTap: _selecionarData,
-                      ),
-                      ListTile(
-                        title: Text(
-                          hora == null
-                              ? 'Selecionar Hora'
-                              : 'Hora: ${hora!.format(context)}',
-                        ),
-                        trailing: Icon(Icons.access_time),
-                        onTap: _selecionarHora,
-                      ),
-                      DropdownButtonFormField(
-                        value: status,
-                        items:
-                            ['Pendente', 'Confirmado', 'Cancelado'].map((s) {
-                              return DropdownMenuItem(value: s, child: Text(s));
-                            }).toList(),
-                        onChanged: (value) => setState(() => status = value!),
-                        decoration: InputDecoration(labelText: 'Status'),
-                      ),
-                      SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: salvarAgendamento,
-                        child: Text('Salvar'),
-                      ),
-                    ],
-                  ),
+                      trailing: Icon(Icons.access_time),
+                      onTap: _selecionarHora,
+                    ),
+                    DropdownButtonFormField(
+                      value: status,
+                      items: ['Pendente', 'Confirmado', 'Cancelado']
+                          .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                          .toList(),
+                      onChanged: (value) => setState(() => status = value!),
+                      decoration: InputDecoration(labelText: 'Status'),
+                    ),
+                    SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: salvarAgendamento,
+                      child: Text('Salvar'),
+                    ),
+                  ],
                 ),
               ),
+            ),
     );
   }
 }

@@ -1,17 +1,21 @@
+import 'package:agendamento_app/models/paciente.dart';
+import 'package:agendamento_app/models/profissional.dart';
+import 'package:agendamento_app/models/sala.dart';
+
 class Agendamento {
   final int id;
-  final int pacienteId;
-  final int profissionalId;
-  final int salaId;
+  Paciente? paciente;
+  Profissional? profissional;
+  Sala? sala;
   final String data;
   final String hora;
   final String status;
 
   Agendamento({
     required this.id,
-    required this.pacienteId,
-    required this.profissionalId,
-    required this.salaId,
+    required Paciente? paciente,
+    required Profissional? profissional,
+    required Sala? sala,
     required this.data,
     required this.hora,
     required this.status,
@@ -20,9 +24,9 @@ class Agendamento {
   factory Agendamento.fromJson(Map<String, dynamic> json) {
     return Agendamento(
       id: json['id'],
-      pacienteId: json['id_paciente'],
-      profissionalId: json['id_profissional'],
-      salaId: json['sala_id'],
+      paciente: Paciente.fromJson(json['paciente']),
+      profissional: Profissional.fromJson(json['profissional']),
+      sala: Sala.fromJson(json['sala']),
       data: json['data'],
       hora: json['hora'],
       status: json['status'],
@@ -31,9 +35,9 @@ class Agendamento {
 
   Map<String, dynamic> toJson() {
     return {
-      'id_paciente': pacienteId,
-      'id_profissional': profissionalId,
-      'sala_id': salaId,
+      ' paciente': paciente?.toJson(),
+      'profissional': profissional?.toJson(),
+      'sala': sala?.toJson(),
       'data': data,
       'hora': hora,
       'status': status,

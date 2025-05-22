@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
      'rest_framework',
     'Agendamentos_clinica',  # <- precisa estar aqui com o nome correto
+      'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -49,6 +50,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+     'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'clinica_agendamento.urls'
@@ -122,3 +125,5 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# === CORS (adicione no final do settings.py) ===
+CORS_ALLOW_ALL_ORIGINS = True  # Habilita para qualquer origem (Flutter Web)

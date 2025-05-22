@@ -14,7 +14,7 @@ class PacienteFormScreen extends StatefulWidget {
 class _PacienteFormScreenState extends State<PacienteFormScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController nomeController;
-  late TextEditingController dataController;
+  late TextEditingController dataNascimentoController;
   late TextEditingController telefoneController;
   late TextEditingController emailController;
 
@@ -22,29 +22,45 @@ class _PacienteFormScreenState extends State<PacienteFormScreen> {
   void initState() {
     super.initState();
     nomeController = TextEditingController(text: widget.paciente?.nome ?? '');
-    dataController = TextEditingController(text: widget.paciente?.dataNascimento ?? '');
+    dataNascimentoController = TextEditingController(text: widget.paciente?.dataNascimento ?? '');
     telefoneController = TextEditingController(text: widget.paciente?.telefone ?? '');
     emailController = TextEditingController(text: widget.paciente?.email ?? '');
   }
 
+  @override
+  void dispose() {
+    nomeController.dispose();
+    dataNascimentoController.dispose();
+    telefoneController.dispose();
+    emailController.dispose();
+    super.dispose();
+  }
+
   void salvar() async {
     if (_formKey.currentState!.validate()) {
-      final novo = Paciente(
-        nome: nomeController.text,
-        dataNascimento: dataController.text,
-        telefone: telefoneController.text,
-        email: emailController.text,
+      final paciente = Paciente(
+        nome: nomeController.text.trim(),
+        dataNascimento: dataNascimentoController.text.trim(), // deve estar no formato YYYY-MM-DD
+        telefone: telefoneController.text.trim(),
+        email: emailController.text.trim(),
       );
-      if (widget.paciente == null) {
-        await PacienteService.addPaciente(novo);
-      } else {
-        await PacienteService.updatePaciente(widget.paciente!.id!, novo);
+
+      try {
+        if (widget.paciente == null) {
+          await PacienteService.addPaciente(paciente);
+        } else {
+          await PacienteService.updatePaciente(widget.paciente!.id!, paciente);
+        }
+        Navigator.pop(context);
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao salvar paciente: $e')),
+        );
       }
-      Navigator.pop(context);
     }
   }
 
-  InputDecoration customInput(String label) {
+  InputDecoration inputDecoracao(String label) {
     return InputDecoration(
       labelText: label,
       labelStyle: const TextStyle(fontWeight: FontWeight.bold),
@@ -68,13 +84,40 @@ class _PacienteFormScreenState extends State<PacienteFormScreen> {
           key: _formKey,
           child: ListView(
             children: [
-              TextFormField(controller: nomeController, decoration: customInput('Nome'), validator: (v) => v!.isEmpty ? 'Informe o nome' : null),
+              TextFormField(
+                controller: nomeController,
+                decoration: inputDecoracao('Nome completo'),
+                validator: (value) => value!.isEmpty ? 'Informe o nome do paciente' : null,
+              ),
               const SizedBox(height: 16),
-              TextFormField(controller: dataController, decoration: customInput('Data de nascimento (YYYY-MM-DD)'), validator: (v) => v!.isEmpty ? 'Informe a data' : null),
+              TextFormField(
+                controller: dataNascimentoController,
+                decoration: inputDecoracao('Data de nascimento (AAAA-MM-DD)'),
+                keyboardType: TextInputType.datetime,
+                validator: (value) {
+                  if (value == null || value.isEmpty) return 'Informe a data de nascimento';
+                  final regex = RegExp(r'^\d{4}-\d{2}-\d{2}$');
+                  return regex.hasMatch(value) ? null : 'Formato inválido (ex: 2000-12-31)';
+                },
+              ),
               const SizedBox(height: 16),
-              TextFormField(controller: telefoneController, decoration: customInput('Telefone'), validator: (v) => v!.isEmpty ? 'Informe o telefone' : null),
+              TextFormField(
+                controller: telefoneController,
+                decoration: inputDecoracao('Telefone'),
+                keyboardType: TextInputType.phone,
+                validator: (value) => value!.isEmpty ? 'Informe o telefone' : null,
+              ),
               const SizedBox(height: 16),
-              TextFormField(controller: emailController, decoration: customInput('Email'), validator: (v) => v!.isEmpty ? 'Informe o email' : null),
+              TextFormField(
+                controller: emailController,
+                decoration: inputDecoracao('E-mail'),
+                keyboardType: TextInputType.emailAddress,
+                validator: (value) {
+                  if (value == null || value.isEmpty) return 'Informe o e-mail';
+                  final regex = RegExp(r'^[\w\.-]+@[\w\.-]+\.\w+$');
+                  return regex.hasMatch(value) ? null : 'E-mail inválido';
+                },
+              ),
               const SizedBox(height: 24),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF028090)),

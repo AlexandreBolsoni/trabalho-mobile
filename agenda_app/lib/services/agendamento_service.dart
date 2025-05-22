@@ -5,15 +5,14 @@ import '../models/agendamento.dart';
 class AgendamentoService {
   static const String baseUrl = 'http://127.0.0.1:8000/api/agendamentos/';
 
-  static Future<List<Agendamento>> getAgendamentos() async {
-    final response = await http.get(Uri.parse(baseUrl));
-    if (response.statusCode == 200) {
-      final List data = json.decode(response.body);
-      return data.map((json) => Agendamento.fromJson(json)).toList();
-    } else {
-      throw Exception('Erro ao carregar agendamentos');
-    }
+static Future<List> getAgendamentos() async {
+  final response = await http.get(Uri.parse(baseUrl));
+  if (response.statusCode == 200) {
+    return json.decode(response.body); // retorna como List<Map>
+  } else {
+    throw Exception('Erro ao carregar agendamentos');
   }
+}
 
  
 

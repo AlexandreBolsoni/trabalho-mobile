@@ -6,7 +6,7 @@ class Paciente {
   final String email;
 
   Paciente({
-    this.id, // Removido o required
+    this.id,
     required this.nome,
     required this.dataNascimento,
     required this.telefone,

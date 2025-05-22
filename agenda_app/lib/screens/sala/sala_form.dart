@@ -10,31 +10,30 @@ class SalaForm extends StatefulWidget {
   @override
   State<SalaForm> createState() => _SalaFormState();
 }
-
 class _SalaFormState extends State<SalaForm> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController nomeController = TextEditingController();
-  TextEditingController localizacaoController = TextEditingController();
+  TextEditingController andarController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     if (widget.sala != null) {
-      nomeController.text = widget.sala!['nome'];
-      localizacaoController.text = widget.sala!['localizacao'];
+      nomeController.text = widget.sala!['nome_sala'] ?? '';
+      andarController.text = widget.sala!['andar']?.toString() ?? '';
     }
   }
 
   Future<void> salvar() async {
     if (_formKey.currentState!.validate()) {
       final sala = {
-        'nome': nomeController.text,
-        'localizacao': localizacaoController.text,
+        'nome_sala': nomeController.text,
+        'andar': int.tryParse(andarController.text) ?? 0,
       };
 
       final isEdit = widget.sala != null;
       final url = isEdit
-          ? 'http://127.0.0.1:8000/api/salas/${widget.sala!['id_sala']}/'
+          ? 'http://127.0.0.1:8000/api/salas/${widget.sala!['id']}/'
           : 'http://127.0.0.1:8000/api/salas/';
       final response = await (isEdit
           ? http.put(Uri.parse(url),
@@ -66,8 +65,8 @@ class _SalaFormState extends State<SalaForm> {
           key: _formKey,
           child: ListView(
             children: [
-              _buildTextField('Nome', nomeController),
-              _buildTextField('Localização', localizacaoController),
+              _buildTextField('Nome da Sala', nomeController),
+              _buildTextField('Andar', andarController, isNumber: true),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: salvar,
@@ -80,11 +79,13 @@ class _SalaFormState extends State<SalaForm> {
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller) {
+  Widget _buildTextField(String label, TextEditingController controller,
+      {bool isNumber = false}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: TextFormField(
         controller: controller,
+        keyboardType: isNumber ? TextInputType.number : null,
         validator: (value) =>
             value == null || value.isEmpty ? 'Campo obrigatório' : null,
         decoration: InputDecoration(
