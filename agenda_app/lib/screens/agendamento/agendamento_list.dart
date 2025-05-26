@@ -74,9 +74,11 @@ class _AgendamentoListPageState extends State<AgendamentoListPage> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
+   floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.indigo,
+        foregroundColor: Colors.white,
+        child: const Icon(Icons.add),
         onPressed: () => _navigateToForm(),
-        child: Icon(Icons.add),
       ),
     );
   }

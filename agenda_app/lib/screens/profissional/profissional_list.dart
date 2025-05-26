@@ -62,10 +62,7 @@ class _ProfissionalListState extends State<ProfissionalList> {
       appBar: AppBar(
         title: const Text('Profissionais'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () => abrirFormulario(),
-          )
+        
         ],
       ),
       body: ListView.builder(
@@ -96,6 +93,12 @@ class _ProfissionalListState extends State<ProfissionalList> {
             ),
           );
         },
+      ),
+         floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.indigo,
+        foregroundColor: Colors.white,
+        child: const Icon(Icons.add),
+        onPressed: () => abrirFormulario(),
       ),
     );
   }

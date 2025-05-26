@@ -44,7 +44,7 @@ class _PacienteListScreenState extends State<PacienteListScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF4F7FA),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF114B5F),
+        backgroundColor:  Colors.indigo,
         title: const Text("Pacientes", style: TextStyle(color: Colors.white)),
         centerTitle: true,
       ),
@@ -75,7 +75,8 @@ class _PacienteListScreenState extends State<PacienteListScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFF028090),
+        backgroundColor: Colors.indigo,
+        foregroundColor: Colors.white,
         child: const Icon(Icons.add),
         onPressed: () => abrirForm(),
       ),

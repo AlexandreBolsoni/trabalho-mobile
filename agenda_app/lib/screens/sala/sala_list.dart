@@ -62,10 +62,7 @@ class _SalaListState extends State<SalaList> {
       appBar: AppBar(
         title: const Text('Salas'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () => abrirFormulario(),
-          )
+   
         ],
       ),
       body: ListView.builder(
@@ -96,6 +93,12 @@ class _SalaListState extends State<SalaList> {
             ),
           );
         },
+      ),
+         floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.indigo,
+        foregroundColor: Colors.white,
+        child: const Icon(Icons.add),
+        onPressed: () => abrirFormulario(),
       ),
     );
   }
