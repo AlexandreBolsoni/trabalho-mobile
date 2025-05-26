@@ -3,6 +3,7 @@ import 'screens/paciente/paciente_list.dart';
 import 'screens/profissional/profissional_list.dart';
 import 'screens/sala/sala_list.dart';
 import 'screens/agendamento/agendamento_list.dart';
+import 'screens/horario/horario_list.dart'; // <- importe a tela de horários
 
 void main() {
   runApp(const ClinicaApp());
@@ -36,10 +37,10 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<_HomeOption> options = [
-      _HomeOption("Pacientes", Icons.person, PacienteListScreen()),
-      _HomeOption("Profissionais", Icons.medical_services,  ProfissionalList()),
-      _HomeOption("Salas", Icons.meeting_room,  SalaList()),
-      _HomeOption("Agendamentos", Icons.calendar_month, AgendamentoListPage()),
+      _HomeOption("Pacientes", Icons.person, const PacienteListScreen()),
+      _HomeOption("Profissionais", Icons.medical_services, const ProfissionalList()),
+      _HomeOption("Salas", Icons.meeting_room, const SalaList()),
+      _HomeOption("Agendamentos", Icons.calendar_month, const AgendamentoListPage()),
     ];
 
     return Scaffold(
@@ -47,51 +48,89 @@ class HomePage extends StatelessWidget {
         title: const Text('Sistema de Agendamentos'),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: GridView.count(
-          crossAxisCount: 2,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-          children: options.map((option) {
-            return InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => option.page),
-                );
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.indigo.shade100,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 6,
-                      offset: const Offset(2, 4),
-                    )
-                  ],
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(option.icon, size: 48, color: Colors.indigo.shade800),
-                    const SizedBox(height: 12),
-                    Text(
-                      option.title,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.indigo.shade900,
+      body: Column(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: GridView.count(
+                crossAxisCount: 2,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+                children: options.map((option) {
+                  return InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => option.page),
+                      );
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.indigo.shade100,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 6,
+                            offset: Offset(2, 4),
+                          )
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(option.icon, size: 48, color: Colors.indigo.shade800),
+                          const SizedBox(height: 12),
+                          Text(
+                            option.title,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.indigo.shade900,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  );
+                }).toList(),
               ),
-            );
-          }).toList(),
-        ),
+            ),
+          ),
+          // Botão de Horários Disponíveis
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+            child: SizedBox(
+              width: double.infinity,
+              height: 64,
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.indigo,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 4,
+                ),
+                icon: const Icon(Icons.access_time, size: 28, color: Colors.white),
+                label: const Text(
+                  'Horários Disponíveis',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const HorarioListScreen()),
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
