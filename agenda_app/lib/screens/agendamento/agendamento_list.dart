@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'agendamento_form.dart';
 import '../../services/agendamento_service.dart';
+import '../../models/agendamento.dart';
+
 
 class AgendamentoListPage extends StatefulWidget {
   const AgendamentoListPage({super.key});
@@ -10,7 +12,7 @@ class AgendamentoListPage extends StatefulWidget {
 }
 
 class _AgendamentoListPageState extends State<AgendamentoListPage> {
-  List agendamentos = [];
+  List<Agendamento> agendamentos = [];
 
   @override
   void initState() {
@@ -21,7 +23,7 @@ class _AgendamentoListPageState extends State<AgendamentoListPage> {
   Future<void> fetchAgendamentos() async {
     final data = await AgendamentoService.getAgendamentos();
     setState(() {
-      agendamentos = data;
+      agendamentos = data.cast<Agendamento>();
     });
   }
 
@@ -30,11 +32,12 @@ class _AgendamentoListPageState extends State<AgendamentoListPage> {
     fetchAgendamentos();
   }
 
-  void _navigateToForm([Map? agendamento]) async {
+  void _navigateToForm([Agendamento? agendamento]) async {
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => AgendamentoFormPage(agendamento: agendamento),
+        builder: (context) =>
+            AgendamentoFormPage(agendamento: agendamento?.toJson()),
       ),
     );
     fetchAgendamentos();
@@ -54,9 +57,12 @@ class _AgendamentoListPageState extends State<AgendamentoListPage> {
             elevation: 3,
             margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             child: ListTile(
-              title: Text('Paciente: ${agendamento['paciente_nome']}'),
+              title: Text('Paciente: ${agendamento.paciente?.nome ?? '---'}'),
               subtitle: Text(
-                  'Data: ${agendamento['data']} - Hora: ${agendamento['hora']}\nProfissional: ${agendamento['profissional_nome']} - Sala: ${agendamento['sala_nome']}'),
+                'Data: ${agendamento.data} - Hora: ${agendamento.hora}\n'
+                'Profissional: ${agendamento.profissional?.nome ?? '---'} - '
+                'Sala: ${agendamento.sala?.nomeSala ?? '---'}',
+              ),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -66,7 +72,7 @@ class _AgendamentoListPageState extends State<AgendamentoListPage> {
                   ),
                   IconButton(
                     icon: Icon(Icons.delete),
-                    onPressed: () => _deleteAgendamento(agendamento['id']),
+                    onPressed: () => _deleteAgendamento(agendamento.id!),
                   ),
                 ],
               ),
@@ -74,7 +80,7 @@ class _AgendamentoListPageState extends State<AgendamentoListPage> {
           );
         },
       ),
-   floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.indigo,
         foregroundColor: Colors.white,
         child: const Icon(Icons.add),

@@ -81,11 +81,11 @@ class _SalaListState extends State<SalaList> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.edit, color: Colors.orange),
+                    icon: const Icon(Icons.edit),
                     onPressed: () => abrirFormulario(s),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
+                    icon: const Icon(Icons.delete ),
                     onPressed: () => excluirSala(s['id']),
                   ),
                 ],

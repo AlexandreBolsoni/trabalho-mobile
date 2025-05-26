@@ -81,11 +81,11 @@ class _ProfissionalListState extends State<ProfissionalList> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.edit, color: Colors.orange),
+                    icon: const Icon(Icons.edit),
                     onPressed: () => abrirFormulario(p),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
+                    icon: const Icon(Icons.delete),
                     onPressed: () => excluirProfissional(p['id_profissional']),
                   ),
                 ],

@@ -1,5 +1,7 @@
 import 'package:agendamento_app/models/agendamento.dart';
 import 'package:agendamento_app/models/profissional.dart';
+import 'package:agendamento_app/models/paciente.dart';
+import 'package:agendamento_app/models/sala.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../services/agendamento_service.dart';
@@ -18,16 +20,17 @@ class AgendamentoFormPage extends StatefulWidget {
 
 class _AgendamentoFormPageState extends State<AgendamentoFormPage> {
   final _formKey = GlobalKey<FormState>();
-  int? pacienteId;
-  int? profissionalId;
-  int? salaId;
+
+  Paciente? paciente;
+  Profissional? profissional;
+  Sala? sala;
   DateTime? data;
   TimeOfDay? hora;
   String status = 'Pendente';
 
-  List pacientes = [];
+  List<Paciente> pacientes = [];
   List<Profissional> profissionais = [];
-  List salas = [];
+  List<Sala> salas = [];
 
   @override
   void initState() {
@@ -35,9 +38,9 @@ class _AgendamentoFormPageState extends State<AgendamentoFormPage> {
     carregarDadosIniciais();
     if (widget.agendamento != null) {
       final a = widget.agendamento!;
-      pacienteId = a['paciente'];
-      profissionalId = a['profissional'];
-      salaId = a['sala'];
+      paciente = a['paciente'];
+      profissional = a['profissional'];
+      sala = a['sala'];
       data = DateTime.parse(a['data']);
       hora = TimeOfDay(
         hour: int.parse(a['hora'].split(":")[0]),
@@ -65,9 +68,9 @@ class _AgendamentoFormPageState extends State<AgendamentoFormPage> {
     if (!_formKey.currentState!.validate()) return;
 
     final dados = {
-      'paciente': pacienteId,
-      'profissional': profissionalId,
-      'sala': salaId,
+      'paciente': paciente?.toJson(),
+      'profissional': profissional?.toJson(),
+      'sala': sala?.toJson(),
       'data': DateFormat('yyyy-MM-dd').format(data!),
       'hora': hora!.format(context),
       'status': status,
@@ -121,42 +124,42 @@ class _AgendamentoFormPageState extends State<AgendamentoFormPage> {
                 key: _formKey,
                 child: ListView(
                   children: [
-                    DropdownButtonFormField(
-                      value: pacienteId,
-                      items: pacientes.map<DropdownMenuItem<int>>((p) {
+                    DropdownButtonFormField<Paciente>(
+                      value: paciente,
+                      items: pacientes.map((p) {
                         return DropdownMenuItem(
-                          value: p.id,
+                          value: p,
                           child: Text(p.nome),
                         );
                       }).toList(),
-                      onChanged: (value) => setState(() => pacienteId = value),
+                      onChanged: (value) => setState(() => paciente = value),
                       decoration: InputDecoration(labelText: 'Paciente'),
                       validator: (value) =>
                           value == null ? 'Selecione um paciente' : null,
                     ),
-                    DropdownButtonFormField(
-                      value: profissionalId,
-                      items: profissionais.map<DropdownMenuItem<int>>((p) {
+                    DropdownButtonFormField<Profissional>(
+                      value: profissional,
+                      items: profissionais.map((p) {
                         return DropdownMenuItem(
-                          value: p.id,
+                          value: p,
                           child: Text(p.nome),
                         );
                       }).toList(),
                       onChanged: (value) =>
-                          setState(() => profissionalId = value),
+                          setState(() => profissional = value),
                       decoration: InputDecoration(labelText: 'Profissional'),
                       validator: (value) =>
                           value == null ? 'Selecione um profissional' : null,
                     ),
-                    DropdownButtonFormField(
-                      value: salaId,
-                      items: salas.map<DropdownMenuItem<int>>((s) {
+                    DropdownButtonFormField<Sala>(
+                      value: sala,
+                      items: salas.map((s) {
                         return DropdownMenuItem(
-                          value: s['id'],
-                          child: Text(s['nomeSala']),
+                          value: s,
+                          child: Text(s.nomeSala),
                         );
                       }).toList(),
-                      onChanged: (value) => setState(() => salaId = value),
+                      onChanged: (value) => setState(() => sala = value),
                       decoration: InputDecoration(labelText: 'Sala'),
                       validator: (value) =>
                           value == null ? 'Selecione uma sala' : null,
@@ -179,10 +182,13 @@ class _AgendamentoFormPageState extends State<AgendamentoFormPage> {
                       trailing: Icon(Icons.access_time),
                       onTap: _selecionarHora,
                     ),
-                    DropdownButtonFormField(
+                    DropdownButtonFormField<String>(
                       value: status,
                       items: ['Pendente', 'Confirmado', 'Cancelado']
-                          .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                          .map((s) => DropdownMenuItem(
+                                value: s,
+                                child: Text(s),
+                              ))
                           .toList(),
                       onChanged: (value) => setState(() => status = value!),
                       decoration: InputDecoration(labelText: 'Status'),
