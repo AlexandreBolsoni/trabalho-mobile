@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import '../../models/profissional.dart';
+import '../../services/profissional_service.dart';
 
 class ProfissionalForm extends StatefulWidget {
-  final Map? profissional;
+  final Profissional? profissional;
 
-  const ProfissionalForm({super.key, this.profissional});
+  const ProfissionalForm({Key? key, this.profissional}) : super(key: key);
 
   @override
   State<ProfissionalForm> createState() => _ProfissionalFormState();
@@ -13,48 +13,49 @@ class ProfissionalForm extends StatefulWidget {
 
 class _ProfissionalFormState extends State<ProfissionalForm> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController nomeController = TextEditingController();
-  TextEditingController especialidadeController = TextEditingController();
-  TextEditingController telefoneController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
+  late TextEditingController nomeController;
+  late TextEditingController especialidadeController;
+  late TextEditingController telefoneController;
+  late TextEditingController emailController;
 
   @override
   void initState() {
     super.initState();
-    if (widget.profissional != null) {
-      nomeController.text = widget.profissional!['nome'];
-      especialidadeController.text = widget.profissional!['especialidade'];
-      telefoneController.text = widget.profissional!['telefone'];
-      emailController.text = widget.profissional!['email'];
-    }
+    nomeController = TextEditingController(text: widget.profissional?.nome ?? '');
+    especialidadeController = TextEditingController(text: widget.profissional?.especialidade ?? '');
+    telefoneController = TextEditingController(text: widget.profissional?.telefone ?? '');
+    emailController = TextEditingController(text: widget.profissional?.email ?? '');
+  }
+
+  @override
+  void dispose() {
+    nomeController.dispose();
+    especialidadeController.dispose();
+    telefoneController.dispose();
+    emailController.dispose();
+    super.dispose();
   }
 
   Future<void> salvar() async {
     if (_formKey.currentState!.validate()) {
-      final profissional = {
-        'nome': nomeController.text,
-        'especialidade': especialidadeController.text,
-        'telefone': telefoneController.text,
-        'email': emailController.text,
-      };
+      final profissional = Profissional(
+        id: widget.profissional?.id ?? 0, // id 0 ou algum valor placeholder
+        nome: nomeController.text,
+        especialidade: especialidadeController.text,
+        telefone: telefoneController.text,
+        email: emailController.text,
+      );
 
-      final isEdit = widget.profissional != null;
-      final url = isEdit
-          ? 'http://127.0.0.1:8000/api/profissionais/${widget.profissional!['id_profissional']}/'
-          : 'http://127.0.0.1:8000/api/profissionais/';
-      final response = await (isEdit
-          ? http.put(Uri.parse(url),
-              headers: {'Content-Type': 'application/json'},
-              body: jsonEncode(profissional))
-          : http.post(Uri.parse(url),
-              headers: {'Content-Type': 'application/json'},
-              body: jsonEncode(profissional)));
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      try {
+        if (widget.profissional == null) {
+          await ProfissionalService.addProfissional(profissional);
+        } else {
+          await ProfissionalService.updateProfissional(profissional.id, profissional);
+        }
         Navigator.pop(context, true);
-      } else {
+      } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao salvar profissional.')),
+          SnackBar(content: Text('Erro ao salvar profissional: $e')),
         );
       }
     }
@@ -64,20 +65,34 @@ class _ProfissionalFormState extends State<ProfissionalForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.profissional == null
-            ? 'Novo Profissional'
-            : 'Editar Profissional'),
+        title: Text(widget.profissional == null ? 'Novo Profissional' : 'Editar Profissional'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: ListView(
+          child: Column(
             children: [
-              _buildTextField('Nome', nomeController),
-              _buildTextField('Especialidade', especialidadeController),
-              _buildTextField('Telefone', telefoneController),
-              _buildTextField('Email', emailController, tipo: TextInputType.emailAddress),
+              TextFormField(
+                controller: nomeController,
+                decoration: const InputDecoration(labelText: 'Nome'),
+                validator: (value) => value == null || value.isEmpty ? 'Informe o nome' : null,
+              ),
+              TextFormField(
+                controller: especialidadeController,
+                decoration: const InputDecoration(labelText: 'Especialidade'),
+                validator: (value) => value == null || value.isEmpty ? 'Informe a especialidade' : null,
+              ),
+              TextFormField(
+                controller: telefoneController,
+                decoration: const InputDecoration(labelText: 'Telefone'),
+                validator: (value) => value == null || value.isEmpty ? 'Informe o telefone' : null,
+              ),
+              TextFormField(
+                controller: emailController,
+                decoration: const InputDecoration(labelText: 'Email'),
+                validator: (value) => value == null || value.isEmpty ? 'Informe o email' : null,
+              ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: salvar,
@@ -85,22 +100,6 @@ class _ProfissionalFormState extends State<ProfissionalForm> {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField(String label, TextEditingController controller,
-      {TextInputType tipo = TextInputType.text}) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: TextFormField(
-        controller: controller,
-        keyboardType: tipo,
-        validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
-        decoration: InputDecoration(
-          labelText: label,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
     );

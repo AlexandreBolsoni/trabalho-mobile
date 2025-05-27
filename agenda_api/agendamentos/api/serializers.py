@@ -21,7 +21,7 @@ class AgendamentoSerializer(serializers.ModelSerializer):
 
         # Verificar se o horário está disponível para o profissional
         disponibilidade = Horario.objects.filter(
-            id_profissional=profissional,
+            profissional=profissional,
             data=data_agendamento,
             hora_inicio__lte=hora_agendamento,
             hora_fim__gte=hora_agendamento
@@ -32,7 +32,7 @@ class AgendamentoSerializer(serializers.ModelSerializer):
 
         # Verificar conflito de horário (já existe outro agendamento no mesmo horário?)
         conflito = Agendamento.objects.filter(
-            id_profissional=profissional,
+          profissional=profissional,
             data=data_agendamento,
             hora=hora_agendamento
         ).exists()

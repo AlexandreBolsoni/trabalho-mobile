@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'profissional_form.dart';
+import '../../models/profissional.dart';
+import '../../services/profissional_service.dart';
 
 class ProfissionalList extends StatefulWidget {
   const ProfissionalList({super.key});
@@ -11,7 +11,7 @@ class ProfissionalList extends StatefulWidget {
 }
 
 class _ProfissionalListState extends State<ProfissionalList> {
-  List profissionais = [];
+  List<Profissional> profissionais = [];
 
   @override
   void initState() {
@@ -20,30 +20,29 @@ class _ProfissionalListState extends State<ProfissionalList> {
   }
 
   Future<void> carregarProfissionais() async {
-    final response =
-        await http.get(Uri.parse('http://127.0.0.1:8000/api/profissionais/'));
-
-    if (response.statusCode == 200) {
+    try {
+      final lista = await ProfissionalService.getProfissionais();
       setState(() {
-        profissionais = jsonDecode(utf8.decode(response.bodyBytes));
+        profissionais = lista;
       });
+    } catch (e) {
+      // Pode mostrar um snackbar ou algo para o usuário
+      print('Erro ao carregar profissionais: $e');
     }
   }
 
   Future<void> excluirProfissional(int id) async {
-    final response = await http.delete(
-        Uri.parse('http://127.0.0.1:8000/api/profissionais/$id/'));
-
-    if (response.statusCode == 204) {
+    try {
+      await ProfissionalService.deleteProfissional(id);
       carregarProfissionais();
-    } else {
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Erro ao excluir profissional')),
       );
     }
   }
 
-  void abrirFormulario([Map? profissional]) async {
+  void abrirFormulario([Profissional? profissional]) async {
     final resultado = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -61,9 +60,6 @@ class _ProfissionalListState extends State<ProfissionalList> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profissionais'),
-        actions: [
-        
-        ],
       ),
       body: ListView.builder(
         itemCount: profissionais.length,
@@ -75,8 +71,8 @@ class _ProfissionalListState extends State<ProfissionalList> {
               borderRadius: BorderRadius.circular(16),
             ),
             child: ListTile(
-              title: Text(p['nome']),
-              subtitle: Text('${p['especialidade']} | ${p['email']}'),
+              title: Text(p.nome),
+              subtitle: Text('${p.especialidade} | ${p.email}'),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -86,7 +82,7 @@ class _ProfissionalListState extends State<ProfissionalList> {
                   ),
                   IconButton(
                     icon: const Icon(Icons.delete),
-                    onPressed: () => excluirProfissional(p['id_profissional']),
+                    onPressed: () => excluirProfissional(p.id),
                   ),
                 ],
               ),
@@ -94,7 +90,7 @@ class _ProfissionalListState extends State<ProfissionalList> {
           );
         },
       ),
-         floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.indigo,
         foregroundColor: Colors.white,
         child: const Icon(Icons.add),
