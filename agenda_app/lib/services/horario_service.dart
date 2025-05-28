@@ -1,43 +1,57 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../../models/horario_disponivel.dart';
+import '../models/horario.dart';
 
 class HorarioService {
   static const String baseUrl = 'http://127.0.0.1:8000/horarios/';
+  static const String _token = '4e1765b9e1caaa4e4a30de71c1f1188c24e1e44c';
 
-  static Future<List<HorarioDisponivel>> fetchHorarios() async {
-    final response = await http.get(Uri.parse(baseUrl));
+  static Map<String, String> _headers() {
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': 'Token $_token',
+    };
+  }
 
+  static Future<List<Horario>> getHorarios() async {
+    final response = await http.get(Uri.parse(baseUrl), headers: _headers());
     if (response.statusCode == 200) {
-  List<dynamic> jsonData = jsonDecode(utf8.decode(response.bodyBytes));
-      return jsonData.map((json) => HorarioDisponivel.fromJson(json)).toList();
+      final List data = json.decode(response.body);
+      return data.map((json) => Horario.fromJson(json)).toList();
     } else {
       throw Exception('Erro ao carregar horarios');
     }
   }
 
- static Future<void> addHorario(HorarioDisponivel horario) async {
-  await http.post(
-    Uri.parse(baseUrl),
-    headers: {'Content-Type': 'application/json'},
-    body: json.encode(horario.toJson()),
-  ); 
- } 
+  static Future<void> addHorario(Horario horario) async {
+    final response = await http.post(
+      Uri.parse(baseUrl),
+      headers: _headers(),
+      body: json.encode(horario.toJson()),
+    );
+    if (response.statusCode != 201) {
+      throw Exception('Erro ao adicionar horario');
+    }
+  }
 
- static Future<void> updateHorario(int id, HorarioDisponivel horario) async {
-  final response = await http.put(
-    Uri.parse('$baseUrl$id/'),
-    headers: {'Content-Type': 'application/json'},
-    body: json.encode(horario.toJson()),
-  );
-  if (response.statusCode != 200) {
-    throw Exception('Erro ao atualizar horario');
+  static Future<void> updateHorario(int id, Horario horario) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl$id/'),
+      headers: _headers(),
+      body: json.encode(horario.toJson()),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Erro ao atualizar horario');
+    }
   }
-}
-static Future<void> deleteHorario(int id) async {
-  final response = await http.delete(Uri.parse('$baseUrl$id/'));
-  if (response.statusCode != 204) {
-    throw Exception('Erro ao excluir horario');
+
+  static Future<void> deleteHorario(int id) async {
+    final response = await http.delete(
+      Uri.parse('$baseUrl$id/'),
+      headers: _headers(),
+    );
+    if (response.statusCode != 204) {
+      throw Exception('Erro ao excluir horario');
+    }
   }
-}
 }

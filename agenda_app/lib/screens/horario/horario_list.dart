@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../models/horario_disponivel.dart';
+import '../../models/horario.dart';
 import '../../services/horario_service.dart';
 import 'horario_form.dart';
 
@@ -11,7 +11,7 @@ class HorarioListScreen extends StatefulWidget {
 }
 
 class _HorarioListScreenState extends State<HorarioListScreen> {
-  List<HorarioDisponivel> horarios = [];
+  List<Horario> horarios = [];
 
   @override
   void initState() {
@@ -20,7 +20,7 @@ class _HorarioListScreenState extends State<HorarioListScreen> {
   }
 
   void carregarHorarios() async {
-    final data = await HorarioService.fetchHorarios();
+    final data = await HorarioService.getHorarios();
     setState(() {
       horarios = data;
     });
@@ -31,7 +31,7 @@ class _HorarioListScreenState extends State<HorarioListScreen> {
     carregarHorarios();
   }
 
-  void abrirForm([HorarioDisponivel? horario]) async {
+  void abrirForm([Horario? horario]) async {
     await Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => HorarioFormScreen(horario: horario)),
@@ -45,7 +45,10 @@ class _HorarioListScreenState extends State<HorarioListScreen> {
       backgroundColor: const Color(0xFFF4F7FA),
       appBar: AppBar(
         backgroundColor: Colors.indigo,
-        title: const Text("Horários Disponíveis", style: TextStyle(color: Colors.white)),
+        title: const Text(
+          "Horários Disponíveis",
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
       ),
       body: Padding(
@@ -56,7 +59,9 @@ class _HorarioListScreenState extends State<HorarioListScreen> {
             final h = horarios[index];
             return Card(
               elevation: 3,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
               child: ListTile(
                 contentPadding: const EdgeInsets.all(12),
                 title: Text(

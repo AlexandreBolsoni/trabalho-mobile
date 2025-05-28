@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../models/horario_disponivel.dart';
+import '../../models/horario.dart';
 import '../../models/profissional.dart';
 import '../../services/horario_service.dart';
 import '../../services/profissional_service.dart'; // Supondo que exista
 
 class HorarioFormScreen extends StatefulWidget {
-  final HorarioDisponivel? horario;
+  final Horario? horario;
 
   const HorarioFormScreen({super.key, this.horario});
 
@@ -27,8 +27,12 @@ class _HorarioFormScreenState extends State<HorarioFormScreen> {
   void initState() {
     super.initState();
     dataController = TextEditingController(text: widget.horario?.data ?? '');
-    horaInicioController = TextEditingController(text: widget.horario?.horaInicio ?? '');
-    horaFimController = TextEditingController(text: widget.horario?.horaFim ?? '');
+    horaInicioController = TextEditingController(
+      text: widget.horario?.horaInicio ?? '',
+    );
+    horaFimController = TextEditingController(
+      text: widget.horario?.horaFim ?? '',
+    );
     profissionalSelecionado = widget.horario?.profissional;
     carregarProfissionais();
   }
@@ -49,7 +53,7 @@ class _HorarioFormScreenState extends State<HorarioFormScreen> {
 
   void salvar() async {
     if (_formKey.currentState!.validate() && profissionalSelecionado != null) {
-      final novo = HorarioDisponivel(
+      final novo = Horario(
         profissional: profissionalSelecionado!,
         data: dataController.text,
         horaInicio: horaInicioController.text,
@@ -59,7 +63,10 @@ class _HorarioFormScreenState extends State<HorarioFormScreen> {
       if (widget.horario == null) {
         await HorarioService.addHorario(novo);
       } else {
-        await HorarioService.updateHorario(widget.horario!.profissional!.id!, novo);
+        await HorarioService.updateHorario(
+          widget.horario!.profissional!.id,
+          novo,
+        );
       }
 
       Navigator.pop(context);
@@ -93,14 +100,14 @@ class _HorarioFormScreenState extends State<HorarioFormScreen> {
               DropdownButtonFormField<Profissional>(
                 value: profissionalSelecionado,
                 decoration: customInput('Profissional'),
-                items: profissionais.map((p) {
-                  return DropdownMenuItem(
-                    value: p,
-                    child: Text(p.nome),
-                  );
-                }).toList(),
+                items:
+                    profissionais.map((p) {
+                      return DropdownMenuItem(value: p, child: Text(p.nome));
+                    }).toList(),
                 onChanged: (p) => setState(() => profissionalSelecionado = p),
-                validator: (value) => value == null ? 'Selecione um profissional' : null,
+                validator:
+                    (value) =>
+                        value == null ? 'Selecione um profissional' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -112,7 +119,8 @@ class _HorarioFormScreenState extends State<HorarioFormScreen> {
               TextFormField(
                 controller: horaInicioController,
                 decoration: customInput('Hora Início (HH:MM)'),
-                validator: (v) => v!.isEmpty ? 'Informe a hora de início' : null,
+                validator:
+                    (v) => v!.isEmpty ? 'Informe a hora de início' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -122,7 +130,9 @@ class _HorarioFormScreenState extends State<HorarioFormScreen> {
               ),
               const SizedBox(height: 24),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF028090)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF028090),
+                ),
                 onPressed: salvar,
                 child: const Text("Salvar", style: TextStyle(fontSize: 16)),
               ),

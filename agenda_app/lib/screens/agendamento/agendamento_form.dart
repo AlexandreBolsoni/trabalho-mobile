@@ -60,7 +60,7 @@ class _AgendamentoFormPageState extends State<AgendamentoFormPage> {
   Future<void> carregarDadosIniciais() async {
     pacientes = await PacienteService.fetchPacientes();
     profissionais = await ProfissionalService.getProfissionais();
-    salas = await SalaService.getSalas();
+    salas = await SalaService.fetchSalas();
     setState(() {});
   }
 

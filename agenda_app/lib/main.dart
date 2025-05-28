@@ -39,7 +39,7 @@ class HomePage extends StatelessWidget {
     final List<_HomeOption> options = [
       _HomeOption("Pacientes", Icons.person, const PacienteListScreen()),
       _HomeOption("Profissionais", Icons.medical_services, const ProfissionalList()),
-      _HomeOption("Salas", Icons.meeting_room, const SalaList()),
+      _HomeOption("Salas", Icons.meeting_room, const SalaListScreen()),
       _HomeOption("Agendamentos", Icons.calendar_month, const AgendamentoListPage()),
     ];
 

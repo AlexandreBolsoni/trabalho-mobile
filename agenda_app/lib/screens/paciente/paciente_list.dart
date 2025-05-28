@@ -44,7 +44,7 @@ class _PacienteListScreenState extends State<PacienteListScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF4F7FA),
       appBar: AppBar(
-        backgroundColor:  Colors.indigo,
+        backgroundColor: Colors.indigo,
         title: const Text("Pacientes", style: TextStyle(color: Colors.white)),
         centerTitle: true,
       ),
@@ -56,17 +56,28 @@ class _PacienteListScreenState extends State<PacienteListScreen> {
             final p = pacientes[index];
             return Card(
               elevation: 3,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
               child: ListTile(
                 contentPadding: const EdgeInsets.all(12),
-                title: Text(p.nome, style: const TextStyle(fontWeight: FontWeight.bold)),
+                title: Text(
+                  p.nome,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
                 subtitle: Text("Tel: ${p.telefone}\nEmail: ${p.email}"),
                 isThreeLine: true,
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    IconButton(icon: const Icon(Icons.edit), onPressed: () => abrirForm(p)),
-                    IconButton(icon: const Icon(Icons.delete), onPressed: () => deletar(p.id!)),
+                    IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: () => abrirForm(p),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete),
+                      onPressed: () => deletar(p.id!),
+                    ),
                   ],
                 ),
               ),

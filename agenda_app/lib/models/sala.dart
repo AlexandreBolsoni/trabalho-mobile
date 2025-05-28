@@ -1,22 +1,21 @@
 class Sala {
-  final int id;
+  final int? id;
   final String nomeSala;
   final int andar;
 
   Sala({
-    required this.id,
+    this.id,
     required this.nomeSala,
     required this.andar,
   });
 
   factory Sala.fromJson(Map<String, dynamic> json) {
-  return Sala(
-    id: json['id'],
-    nomeSala: json['nome_sala'] ?? '',  // <-- aqui evita o erro
-    andar: json['andar'] ?? 0,
-  );
-}
-
+    return Sala(
+      id: json['id'],
+      nomeSala: json['nome_sala'],
+      andar: json['andar'],
+    );
+  }
 
   Map<String, dynamic> toJson() {
     return {

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import '../../models/sala.dart';
+import '../../services/sala_service.dart';
 import 'sala_form.dart';
 
-class SalaList extends StatefulWidget {
-  const SalaList({super.key});
+class SalaListScreen extends StatefulWidget {
+  const SalaListScreen({super.key});
 
   @override
-  State<SalaList> createState() => _SalaListState();
+  State<SalaListScreen> createState() => _SalaListScreenState();
 }
 
-class _SalaListState extends State<SalaList> {
-  List salas = [];
+class _SalaListScreenState extends State<SalaListScreen> {
+  List<Sala> salas = [];
 
   @override
   void initState() {
@@ -19,74 +19,64 @@ class _SalaListState extends State<SalaList> {
     carregarSalas();
   }
 
-  Future<void> carregarSalas() async {
-    final response =
-        await http.get(Uri.parse('http://127.0.0.1:8000/api/salas/'));
-
-    if (response.statusCode == 200) {
+  void carregarSalas() async {
+    try {
+      final data = await SalaService.fetchSalas();
       setState(() {
-        salas = jsonDecode(utf8.decode(response.bodyBytes));
+        salas = data;
       });
+    } catch (e) {
+      print('Erro ao carregar salas: $e');
     }
   }
 
-  Future<void> excluirSala(int id) async {
-    final response =
-        await http.delete(Uri.parse('http://127.0.0.1:8000/api/salas/$id/'));
-
-    if (response.statusCode == 204) {
+  void deletar(int id) async {
+    try {
+      await SalaService.deleteSala(id);
       carregarSalas();
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Erro ao excluir sala')),
-      );
+    } catch (e) {
+      print('Erro ao deletar sala: $e');
     }
   }
 
-  void abrirFormulario([Map? sala]) async {
-    final resultado = await Navigator.push(
+  void abrirForm([Sala? sala]) async {
+    await Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => SalaForm(sala: sala),
-      ),
+      MaterialPageRoute(builder: (_) => SalaFormScreen(sala: sala)),
     );
-
-    if (resultado == true) {
-      carregarSalas();
-    }
+    carregarSalas();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF4F7FA),
       appBar: AppBar(
-        title: const Text('Salas'),
-        actions: [
-   
-        ],
+        backgroundColor: Colors.indigo,
+        title: const Text("Salas", style: TextStyle(color: Colors.white)),
+        centerTitle: true,
       ),
       body: ListView.builder(
         itemCount: salas.length,
         itemBuilder: (context, index) {
           final s = salas[index];
           return Card(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
+            margin: const EdgeInsets.all(12),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             child: ListTile(
-              title: Text(s['nome_sala'] ?? ''),
-              subtitle: Text('Andar: ${s['andar'] ?? 'N/A'}'),
+              contentPadding: const EdgeInsets.all(12),
+              title: Text(s.nomeSala, style: const TextStyle(fontWeight: FontWeight.bold)),
+              subtitle: Text("Andar: ${s.andar}"),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
                     icon: const Icon(Icons.edit),
-                    onPressed: () => abrirFormulario(s),
+                    onPressed: () => abrirForm(s),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.delete ),
-                    onPressed: () => excluirSala(s['id']),
+                    icon: const Icon(Icons.delete),
+                    onPressed: () => deletar(s.id!),
                   ),
                 ],
               ),
@@ -94,11 +84,11 @@ class _SalaListState extends State<SalaList> {
           );
         },
       ),
-         floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.indigo,
         foregroundColor: Colors.white,
         child: const Icon(Icons.add),
-        onPressed: () => abrirFormulario(),
+        onPressed: () => abrirForm(),
       ),
     );
   }

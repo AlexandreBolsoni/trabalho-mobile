@@ -1,53 +1,47 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import '../../models/sala.dart';
+import '../../services/sala_service.dart';
 
-class SalaForm extends StatefulWidget {
-  final Map? sala;
+class SalaFormScreen extends StatefulWidget {
+  final Sala? sala;
 
-  const SalaForm({super.key, this.sala});
+  const SalaFormScreen({super.key, this.sala});
 
   @override
-  State<SalaForm> createState() => _SalaFormState();
+  State<SalaFormScreen> createState() => _SalaFormScreenState();
 }
-class _SalaFormState extends State<SalaForm> {
+
+class _SalaFormScreenState extends State<SalaFormScreen> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController nomeController = TextEditingController();
-  TextEditingController andarController = TextEditingController();
+  late TextEditingController nomeController;
+  late TextEditingController andarController;
 
   @override
   void initState() {
     super.initState();
-    if (widget.sala != null) {
-      nomeController.text = widget.sala!['nome_sala'] ?? '';
-      andarController.text = widget.sala!['andar']?.toString() ?? '';
-    }
+    nomeController = TextEditingController(text: widget.sala?.nomeSala ?? '');
+    andarController = TextEditingController(
+        text: widget.sala?.andar != null ? widget.sala!.andar.toString() : '');
   }
 
   Future<void> salvar() async {
     if (_formKey.currentState!.validate()) {
-      final sala = {
-        'nome_sala': nomeController.text,
-        'andar': int.tryParse(andarController.text) ?? 0,
-      };
+      final sala = Sala(
+        id: widget.sala?.id,
+        nomeSala: nomeController.text,
+        andar: int.tryParse(andarController.text) ?? 0,
+      );
 
-      final isEdit = widget.sala != null;
-      final url = isEdit
-          ? 'http://127.0.0.1:8000/api/salas/${widget.sala!['id']}/'
-          : 'http://127.0.0.1:8000/api/salas/';
-      final response = await (isEdit
-          ? http.put(Uri.parse(url),
-              headers: {'Content-Type': 'application/json'},
-              body: jsonEncode(sala))
-          : http.post(Uri.parse(url),
-              headers: {'Content-Type': 'application/json'},
-              body: jsonEncode(sala)));
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      try {
+        if (widget.sala == null) {
+          await SalaService.addSala(sala);
+        } else {
+          await SalaService.updateSala(widget.sala!.id!, sala);
+        }
         Navigator.pop(context, true);
-      } else {
+      } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao salvar sala.')),
+          const SnackBar(content: Text('Erro ao salvar sala')),
         );
       }
     }

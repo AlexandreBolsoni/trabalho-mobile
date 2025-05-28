@@ -4,13 +4,11 @@ import '../models/profissional.dart';
 
 class ProfissionalService {
   static const String baseUrl = 'http://127.0.0.1:8000/profissionais/';
-  
-  // Aqui  token de autenticação.
-  static String token = '4e1765b9e1caaa4e4a30de71c1f1188c24e1e44c';
+ static const String _token = '4e1765b9e1caaa4e4a30de71c1f1188c24e1e44c';
 
   static Map<String, String> get headers => {
         'Content-Type': 'application/json',
-        'Authorization': 'Token $token',
+        'Authorization': 'Token $_token',
       };
 
   static Future<List<Profissional>> getProfissionais() async {

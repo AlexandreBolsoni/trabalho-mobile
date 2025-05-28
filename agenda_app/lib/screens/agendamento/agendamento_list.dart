@@ -20,12 +20,13 @@ class _AgendamentoListPageState extends State<AgendamentoListPage> {
     fetchAgendamentos();
   }
 
-  Future<void> fetchAgendamentos() async {
-    final data = await AgendamentoService.getAgendamentos();
-    setState(() {
-      agendamentos = data.cast<Agendamento>();
-    });
-  }
+Future<void> fetchAgendamentos() async {
+  final data = await AgendamentoService.getAgendamentos();
+  setState(() {
+    agendamentos = data;
+  });
+}
+
 
   void _deleteAgendamento(int id) async {
     await AgendamentoService.deleteAgendamento(id);
