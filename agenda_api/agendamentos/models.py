@@ -3,6 +3,7 @@ from pacientes.models import Paciente
 from profissionais.models import Profissional
 from salas.models import Sala
 
+
 class Agendamento(models.Model):
     class Status(models.TextChoices):
         PENDENTE = 'pendente', 'Pendente'

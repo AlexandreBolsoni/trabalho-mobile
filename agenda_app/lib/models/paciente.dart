@@ -13,7 +13,7 @@ class Paciente {
     required this.email,
   });
 
-  factory Paciente.fromJson(Map<String, dynamic> json) {
+ factory Paciente.fromJson(Map<String, dynamic> json) {
     return Paciente(
       id: json['id'],
       nome: json['nome'],
