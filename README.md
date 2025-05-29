@@ -24,7 +24,7 @@ agenda\_project/
 │   ├── services/            # Integração com a API
 │   └── main.dart            # Ponto de entrada
 
-
+```
 ---
 
 ## 🧠 Descrição Geral
