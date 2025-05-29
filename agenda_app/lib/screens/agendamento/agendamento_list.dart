@@ -3,7 +3,6 @@ import 'agendamento_form.dart';
 import '../../services/agendamento_service.dart';
 import '../../models/agendamento.dart';
 
-
 class AgendamentoListPage extends StatefulWidget {
   const AgendamentoListPage({super.key});
 
@@ -20,20 +19,63 @@ class _AgendamentoListPageState extends State<AgendamentoListPage> {
     fetchAgendamentos();
   }
 
-Future<void> fetchAgendamentos() async {
-  final data = await AgendamentoService.getAgendamentos();
-  setState(() {
-    agendamentos = data;
-  });
-}
+  Future<void> fetchAgendamentos() async {
+    final data = await AgendamentoService.getAgendamentos();
+    setState(() {
+      agendamentos = data;
+    });
+  }
 
+  Future<bool> confirmarDialogo(BuildContext context, String titulo, String mensagem) async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(titulo),
+            content: Text(mensagem),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text("Não"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text("Sim"),
+              ),
+            ],
+          ),
+        ) ?? false;
+  }
 
-  void _deleteAgendamento(int id) async {
-    await AgendamentoService.deleteAgendamento(id);
+  void _deleteAgendamento(Agendamento agendamento) async {
+    final pacienteNome = agendamento.paciente?.nome ?? '---';
+    final data = agendamento.data;
+    final hora = agendamento.hora;
+
+    bool confirmado = await confirmarDialogo(
+      context,
+      "Confirmar exclusão",
+      "Tem certeza que deseja excluir o agendamento para o paciente: $pacienteNome, data $data e hora $hora?",
+    );
+    if (!confirmado) return;
+
+    await AgendamentoService.deleteAgendamento(agendamento.id!);
     fetchAgendamentos();
   }
 
   void _navigateToForm([Agendamento? agendamento]) async {
+    if (agendamento != null) {
+      final pacienteNome = agendamento.paciente?.nome ?? '---';
+      final data = agendamento.data;
+      final hora = agendamento.hora;
+
+      bool confirmado = await confirmarDialogo(
+        context,
+        "Confirmar edição",
+        "Deseja editar o agendamento para o paciente: $pacienteNome, data $data e hora $hora?",
+      );
+      if (!confirmado) return;
+    }
+
     await Navigator.push(
       context,
       MaterialPageRoute(
@@ -73,7 +115,7 @@ Future<void> fetchAgendamentos() async {
                   ),
                   IconButton(
                     icon: Icon(Icons.delete),
-                    onPressed: () => _deleteAgendamento(agendamento.id!),
+                    onPressed: () => _deleteAgendamento(agendamento),
                   ),
                 ],
               ),

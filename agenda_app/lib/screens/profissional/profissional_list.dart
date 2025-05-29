@@ -31,7 +31,34 @@ class _ProfissionalListState extends State<ProfissionalList> {
     }
   }
 
-  Future<void> excluirProfissional(int id) async {
+  Future<bool> confirmarDialogo(BuildContext context, String titulo, String mensagem) async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(titulo),
+            content: Text(mensagem),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text("Não"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text("Sim"),
+              ),
+            ],
+          ),
+        ) ?? false;
+  }
+
+  Future<void> excluirProfissional(int id, String nome) async {
+    bool confirmado = await confirmarDialogo(
+      context,
+      "Confirmar exclusão",
+      "Tem certeza que deseja excluir o profissional: $nome?",
+    );
+    if (!confirmado) return;
+
     try {
       await ProfissionalService.deleteProfissional(id);
       carregarProfissionais();
@@ -43,6 +70,15 @@ class _ProfissionalListState extends State<ProfissionalList> {
   }
 
   void abrirFormulario([Profissional? profissional]) async {
+    if (profissional != null) {
+      bool confirmado = await confirmarDialogo(
+        context,
+        "Confirmar edição",
+        "Tem certeza que deseja editar o profissional: ${profissional.nome}?",
+      );
+      if (!confirmado) return;
+    }
+
     final resultado = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -82,7 +118,7 @@ class _ProfissionalListState extends State<ProfissionalList> {
                   ),
                   IconButton(
                     icon: const Icon(Icons.delete),
-                    onPressed: () => excluirProfissional(p.id),
+                    onPressed: () => excluirProfissional(p.id, p.nome),
                   ),
                 ],
               ),

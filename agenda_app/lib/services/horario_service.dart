@@ -23,16 +23,29 @@ class HorarioService {
     }
   }
 
-  static Future<void> addHorario(Horario horario) async {
-    final response = await http.post(
-      Uri.parse(baseUrl),
-      headers: _headers(),
-      body: json.encode(horario.toJson()),
-    );
-    if (response.statusCode != 201) {
-      throw Exception('Erro ao adicionar horario');
-    }
+ static Future<void> addHorario(Horario horario) async {
+  final url = Uri.parse(baseUrl);
+  final headers = _headers();
+  final body = json.encode(horario.toJson());
+
+  print('🔹 Enviando requisição POST para $url');
+  print('🔹 Headers: $headers');
+  print('🔹 Body: $body');
+
+  final response = await http.post(
+    url,
+    headers: headers,
+    body: body,
+  );
+
+  print('🔸 Status Code: ${response.statusCode}');
+  print('🔸 Response Body: ${response.body}');
+
+  if (response.statusCode != 201) {
+    throw Exception('Erro ao adicionar horario');
   }
+}
+
 
   static Future<void> updateHorario(int id, Horario horario) async {
     final response = await http.put(

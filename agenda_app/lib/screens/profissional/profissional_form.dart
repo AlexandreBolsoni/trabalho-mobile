@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../models/profissional.dart';
 import '../../services/profissional_service.dart';
 
@@ -36,34 +37,63 @@ class _ProfissionalFormState extends State<ProfissionalForm> {
     super.dispose();
   }
 
-  Future<void> salvar() async {
-    if (_formKey.currentState!.validate()) {
-      final profissional = Profissional(
-        id: widget.profissional?.id ?? 0, // id 0 ou algum valor placeholder
-        nome: nomeController.text,
-        especialidade: especialidadeController.text,
-        telefone: telefoneController.text,
-        email: emailController.text,
-      );
+  InputDecoration _inputDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      border: const OutlineInputBorder(),
+      // Sem fillColor para manter padrão de formulário sem fundo branco
+    );
+  }
 
-      try {
-        if (widget.profissional == null) {
-          await ProfissionalService.addProfissional(profissional);
-        } else {
-          await ProfissionalService.updateProfissional(profissional.id, profissional);
-        }
-        Navigator.pop(context, true);
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao salvar profissional: $e')),
-        );
+  void _formatarTelefone(String value) {
+    String digits = value.replaceAll(RegExp(r'\D'), '');
+    if (digits.length > 11) digits = digits.substring(0, 11);
+    String formatted = digits;
+
+    if (digits.length >= 2) {
+      formatted = '(${digits.substring(0, 2)}) ';
+      if (digits.length >= 7) {
+        formatted += '${digits.substring(2, 7)}-${digits.substring(7)}';
+      } else if (digits.length > 2) {
+        formatted += digits.substring(2);
       }
+    }
+
+    telefoneController.value = TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
+    );
+  }
+
+  Future<void> salvar() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final profissional = Profissional(
+      id: widget.profissional?.id ?? 0,
+      nome: nomeController.text.trim(),
+      especialidade: especialidadeController.text.trim(),
+      telefone: telefoneController.text.trim(),
+      email: emailController.text.trim(),
+    );
+
+    try {
+      if (widget.profissional == null) {
+        await ProfissionalService.addProfissional(profissional);
+      } else {
+        await ProfissionalService.updateProfissional(profissional.id, profissional);
+      }
+      Navigator.pop(context, true);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao salvar profissional: $e')),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFE6EBF1), // Fundo igual ao formulário de paciente/agendamento
       appBar: AppBar(
         title: Text(widget.profissional == null ? 'Novo Profissional' : 'Editar Profissional'),
       ),
@@ -71,32 +101,47 @@ class _ProfissionalFormState extends State<ProfissionalForm> {
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Column(
+          child: ListView(
             children: [
               TextFormField(
                 controller: nomeController,
-                decoration: const InputDecoration(labelText: 'Nome'),
-                validator: (value) => value == null || value.isEmpty ? 'Informe o nome' : null,
+                decoration: _inputDecoration('Nome'),
+                validator: (v) => v == null || v.trim().isEmpty ? 'Informe o nome' : null,
               ),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: especialidadeController,
-                decoration: const InputDecoration(labelText: 'Especialidade'),
-                validator: (value) => value == null || value.isEmpty ? 'Informe a especialidade' : null,
+                decoration: _inputDecoration('Especialidade'),
+                validator: (v) => v == null || v.trim().isEmpty ? 'Informe a especialidade' : null,
               ),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: telefoneController,
-                decoration: const InputDecoration(labelText: 'Telefone'),
-                validator: (value) => value == null || value.isEmpty ? 'Informe o telefone' : null,
+                decoration: _inputDecoration('Telefone'),
+                keyboardType: TextInputType.phone,
+                onChanged: _formatarTelefone,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                validator: (v) => v == null || v.trim().isEmpty ? 'Informe o telefone' : null,
               ),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
-                validator: (value) => value == null || value.isEmpty ? 'Informe o email' : null,
+                decoration: _inputDecoration('Email'),
+                keyboardType: TextInputType.emailAddress,
+                validator: (v) => v == null || v.trim().isEmpty
+                    ? 'Informe o email'
+                    : (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(v)
+                        ? 'Email inválido'
+                        : null),
               ),
-              const SizedBox(height: 20),
-              ElevatedButton(
+              const SizedBox(height: 24),
+              ElevatedButton.icon(
                 onPressed: salvar,
-                child: const Text('Salvar'),
+                icon: const Icon(Icons.save),
+                label: const Text('Salvar', style: TextStyle(fontSize: 16)),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
               ),
             ],
           ),

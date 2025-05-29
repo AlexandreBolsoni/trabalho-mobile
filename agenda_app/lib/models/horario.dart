@@ -13,31 +13,32 @@ class Horario {
     this.horaFim,
   });
 
-factory Horario.fromJson(Map<String, dynamic> json) {
-  final profissionalJson = json['profissional'];
+  factory Horario.fromJson(Map<String, dynamic> json) {
+    final profissionalJson = json['profissional'];
 
-  return Horario(
-    profissional: profissionalJson is Map<String, dynamic>
-        ? Profissional.fromJson(profissionalJson)
-        :  Profissional(
-      id: profissionalJson, 
-      nome: 'Desconhecido', 
-      especialidade: 'Desconhecida', 
-      telefone: 'Desconhecido',
-      email: 'Desconhecido',
-
-    ),
-    data: json['data'],
-    horaInicio: json['hora_inicio'],
-    horaFim: json['hora_fim'],
-  );
-}
-  Map<String, dynamic> toJson() {
-    return {
-      'profissional': profissional?.toJson(),
-      'data': data,
-      'hora_inicio': horaInicio,
-      'hora_fim': horaFim,
-    };
+    return Horario(
+      profissional: profissionalJson is Map<String, dynamic>
+          ? Profissional.fromJson(profissionalJson)
+          : Profissional(
+              id: profissionalJson,
+              nome: 'Desconhecido',
+              especialidade: 'Desconhecida',
+              telefone: 'Desconhecido',
+              email: 'Desconhecido',
+            ),
+      data: json['data'],
+      horaInicio: json['hora_inicio'],
+      horaFim: json['hora_fim'],
+    );
   }
+Map<String, dynamic> toJson() {
+  return {
+    'profissional_id': profissional?.id, // só o ID aqui
+    'data': data,
+    'hora_inicio': horaInicio,
+    'hora_fim': horaFim,
+  };
 }
+
+}
+

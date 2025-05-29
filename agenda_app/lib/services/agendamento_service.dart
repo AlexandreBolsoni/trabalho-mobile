@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/agendamento.dart';
+
 class AgendamentoService {
   static const String baseUrl = 'http://127.0.0.1:8000/agendamentos/';
   static const String _token = '4e1765b9e1caaa4e4a30de71c1f1188c24e1e44c';
@@ -29,7 +30,7 @@ class AgendamentoService {
       body: json.encode(agendamento.toJson()),
     );
     if (response.statusCode != 201) {
-      throw Exception('Erro ao adicionar agendamento');
+      throw Exception('Erro ao adicionar agendamento: ${response.body}');
     }
   }
 
@@ -40,7 +41,7 @@ class AgendamentoService {
       body: json.encode(agendamento.toJson()),
     );
     if (response.statusCode != 200) {
-      throw Exception('Erro ao atualizar agendamento');
+      throw Exception('Erro ao atualizar agendamento: ${response.body}');
     }
   }
 
@@ -50,7 +51,7 @@ class AgendamentoService {
       headers: _headers(),
     );
     if (response.statusCode != 204) {
-      throw Exception('Erro ao excluir agendamento');
+      throw Exception('Erro ao excluir agendamento: ${response.body}');
     }
   }
 }

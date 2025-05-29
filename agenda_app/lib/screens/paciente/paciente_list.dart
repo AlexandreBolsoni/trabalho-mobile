@@ -26,12 +26,48 @@ class _PacienteListScreenState extends State<PacienteListScreen> {
     });
   }
 
-  void deletar(int id) async {
+  Future<bool> confirmarDialogo(BuildContext context, String titulo, String mensagem) async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(titulo),
+            content: Text(mensagem),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text("Não"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text("Sim"),
+              ),
+            ],
+          ),
+        ) ?? false;
+  }
+
+  void deletar(int id, String nome) async {
+    bool confirmado = await confirmarDialogo(
+      context,
+      "Confirmar exclusão",
+      "Tem certeza que deseja excluir o paciente: $nome?",
+    );
+    if (!confirmado) return;
+
     await PacienteService.deletePaciente(id);
     carregarPacientes();
   }
 
   void abrirForm([Paciente? paciente]) async {
+    if (paciente != null) {
+      bool confirmado = await confirmarDialogo(
+        context,
+        "Confirmar edição",
+        "Tem certeza que deseja editar o paciente: ${paciente.nome}?",
+      );
+      if (!confirmado) return;
+    }
+
     await Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => PacienteFormScreen(paciente: paciente)),
@@ -76,7 +112,7 @@ class _PacienteListScreenState extends State<PacienteListScreen> {
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete),
-                      onPressed: () => deletar(p.id!),
+                      onPressed: () => deletar(p.id!, p.nome),
                     ),
                   ],
                 ),
