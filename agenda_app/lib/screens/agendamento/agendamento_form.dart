@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
+// import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:agendamento_app/models/agendamento.dart';
 import 'package:agendamento_app/models/profissional.dart';
 import 'package:agendamento_app/models/paciente.dart';
