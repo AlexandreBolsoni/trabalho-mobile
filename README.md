@@ -1,4 +1,4 @@
-```markdown
+
 # 🗓️ Sistema de Agendamento Médico
 
 Sistema completo de agendamento de consultas médicas, com **frontend em Flutter** e **backend em Django REST Framework**. O projeto está estruturado de forma modular, organizado por entidades como Pacientes, Profissionais, Salas, Horários disponíveis e Agendamentos.
@@ -24,7 +24,6 @@ agenda\_project/
 │   ├── services/            # Integração com a API
 │   └── main.dart            # Ponto de entrada
 
-````
 
 ---
 
