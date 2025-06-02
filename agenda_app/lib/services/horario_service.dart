@@ -28,18 +28,12 @@ class HorarioService {
   final headers = _headers();
   final body = json.encode(horario.toJson());
 
-  print('🔹 Enviando requisição POST para $url');
-  print('🔹 Headers: $headers');
-  print('🔹 Body: $body');
 
   final response = await http.post(
     url,
     headers: headers,
     body: body,
   );
-
-  print('🔸 Status Code: ${response.statusCode}');
-  print('🔸 Response Body: ${response.body}');
 
   if (response.statusCode != 201) {
     throw Exception('Erro ao adicionar horario');

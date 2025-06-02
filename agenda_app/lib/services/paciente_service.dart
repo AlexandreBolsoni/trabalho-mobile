@@ -15,8 +15,6 @@ class PacienteService {
 
   static Future<List<Paciente>> fetchPacientes() async {
     final response = await http.get(Uri.parse(_baseUrl), headers: _headers());
-    print('STATUS CODE: ${response.statusCode}');
-    print('BODY: ${response.body}');
 
     if (response.statusCode == 200) {
       final List data = json.decode(response.body);
@@ -32,8 +30,7 @@ class PacienteService {
       headers: _headers(),
       body: jsonEncode(paciente.toJson()),
     );
-    print('ADD STATUS: ${response.statusCode}');
-    print('ADD BODY: ${response.body}');
+
     if (response.statusCode != 201 && response.statusCode != 200) {
       throw Exception('Erro ao adicionar paciente');
     }
