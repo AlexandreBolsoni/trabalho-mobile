@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'screens/paciente/paciente_list.dart';
-import 'screens/profissional/profissional_list.dart';
-import 'screens/sala/sala_list.dart';
-import 'screens/agendamento/agendamento_list.dart';
-import 'screens/horario/horario_list.dart'; // <- importe a tela de horários
+import 'screens/administrativo/admin_page.dart';
+import 'widgets/card_login.dart'; // ← Importa o card unificado
+import 'widgets/card_home.dart';
 
 void main() {
   runApp(const ClinicaApp());
@@ -17,129 +15,116 @@ class ClinicaApp extends StatelessWidget {
     return MaterialApp(
       title: 'Clínica App',
       theme: ThemeData(
-        primarySwatch: Colors.indigo,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.indigo,
+          primary: Colors.indigo,
+          secondary: Colors.indigoAccent,
+        ),
+        useMaterial3: true,
         scaffoldBackgroundColor: Colors.grey[100],
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.indigo,
           foregroundColor: Colors.white,
         ),
+        navigationBarTheme: NavigationBarThemeData(
+          backgroundColor: Colors.indigo,
+          indicatorColor: Colors.indigo.shade700,
+          labelTextStyle: MaterialStateProperty.resolveWith<TextStyle>((states) {
+            if (states.contains(MaterialState.selected)) {
+              return const TextStyle(color: Colors.white, fontWeight: FontWeight.bold);
+            }
+            return TextStyle(color: Colors.indigo.shade100);
+          }),
+          iconTheme: MaterialStateProperty.resolveWith<IconThemeData>((states) {
+            if (states.contains(MaterialState.selected)) {
+              return const IconThemeData(color: Colors.white);
+            }
+            return IconThemeData(color: Colors.indigo.shade100);
+          }),
+          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+        ),
+        textTheme: const TextTheme(
+          titleLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          bodyMedium: TextStyle(fontSize: 16),
+        ),
       ),
       debugShowCheckedModeBanner: false,
-      home: const HomePage(),
+      home: const MainScreen(),
     );
   }
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
+
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  int _currentIndex = 0;
+
+  final List<Widget> _pages = [
+    const HomeScreen(),
+    const SearchScreen(),
+    const LoginScreen(),
+  ];
+
+  void _onTabTapped(int index) {
+    setState(() => _currentIndex = index);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final List<_HomeOption> options = [
-      _HomeOption("Pacientes", Icons.person, const PacienteListScreen()),
-      _HomeOption("Profissionais", Icons.medical_services, const ProfissionalList()),
-      _HomeOption("Salas", Icons.meeting_room, const SalaListScreen()),
-      _HomeOption("Agendamentos", Icons.calendar_month, const AgendamentoListPage()),
-    ];
-
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sistema de Agendamentos'),
-        centerTitle: true,
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: GridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                children: options.map((option) {
-                  return InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => option.page),
-                      );
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.indigo.shade100,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black26,
-                            blurRadius: 6,
-                            offset: Offset(2, 4),
-                          )
-                        ],
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(option.icon, size: 48, color: Colors.indigo.shade800),
-                          const SizedBox(height: 12),
-                          Text(
-                            option.title,
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.indigo.shade900,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-          ),
-          // Botão de Horários Disponíveis
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-            child: SizedBox(
-              width: double.infinity,
-              height: 64,
-              child: ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.indigo,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 4,
-                ),
-                icon: const Icon(Icons.access_time, size: 28, color: Colors.white),
-                label: const Text(
-                  'Horários Disponíveis',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const HorarioListScreen()),
-                  );
-                },
-              ),
-            ),
-          ),
+      body: _pages[_currentIndex],
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _currentIndex,
+        onDestinationSelected: _onTabTapped,
+        destinations: const [
+          NavigationDestination(icon: Icon(Icons.home), label: 'Início'),
+          NavigationDestination(icon: Icon(Icons.search), label: 'Pesquisa'),
+          NavigationDestination(icon: Icon(Icons.login), label: 'Login'),
         ],
       ),
     );
   }
 }
 
-class _HomeOption {
-  final String title;
-  final IconData icon;
-  final Widget page;
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
 
-  _HomeOption(this.title, this.icon, this.page);
+  @override
+  Widget build(BuildContext context) {
+    return HomeWidget();
+  }
+}
+
+class SearchScreen extends StatelessWidget {
+  const SearchScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text('Pesquisa', style: TextStyle(fontSize: 20)),
+    );
+  }
+}
+
+class LoginScreen extends StatelessWidget {
+  const LoginScreen({super.key});
+
+  void _handleLogin(BuildContext context) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const AdminHomeScreen()),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return LoginCard(
+      onSuccess: () => _handleLogin(context),
+    );
+  }
 }
