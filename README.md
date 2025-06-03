@@ -24,7 +24,7 @@ agenda\_project/
 │   ├── services/            # Integração com a API
 │   └── main.dart            # Ponto de entrada
 
-
+```
 ---
 
 ## 🧠 Descrição Geral
@@ -54,7 +54,8 @@ O sistema permite:
 
 > O sistema segue o modelo relacional abaixo, com integridade entre agendamentos, horários, profissionais e salas.
 
-![Diagrama ER](path/to/diagrama.png) <!-- Substitua com o caminho correto no GitHub -->
+![Diagrama ER](https://github.com/AlexandreBolsoni/trabalho-mobile/blob/main/Diagrama%20Agenda.png)
+
 
 ---
 
