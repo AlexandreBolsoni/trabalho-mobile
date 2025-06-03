@@ -17,6 +17,8 @@ class Sala {
     );
   }
 
+  get nome => null;
+
   Map<String, dynamic> toJson() {
     return {
       'nome_sala': nomeSala,

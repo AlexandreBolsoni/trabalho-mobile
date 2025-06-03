@@ -23,3 +23,5 @@ class Agendamento(models.Model):
 
     def __str__(self):
         return f"{self.data} {self.hora} - {self.profissional.nome} com {self.paciente.nome} [{self.get_status_display()}]"
+    
+    

@@ -54,4 +54,13 @@ class AgendamentoService {
       throw Exception('Erro ao excluir agendamento: ${response.body}');
     }
   }
+  static Future <List<Agendamento>>buscarAgendamentosPorNome(String nome)async{
+   final response = await http.get(Uri.parse('$baseUrl?search=$nome'), headers: _headers());
+    if (response.statusCode == 200) {
+      final List data = json.decode(response.body);
+      return data.map((e) => Agendamento.fromJson(e)).toList();
+    } else {
+      throw Exception('Erro ao carregar agendamentos');
+    }
+  }
 }

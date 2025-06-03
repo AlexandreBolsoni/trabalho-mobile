@@ -6,6 +6,9 @@ import '../../screens/agendamento/agendamento_list.dart';
 import '../../screens/horario/horario_list.dart';
 import '../../main.dart';
 
+// Importe sua AdminNavBar
+import '../../widgets/bottonNavBar.dart';  // ajuste o caminho se necessário
+
 void main() {
   runApp(const AdminHomeScreen());
 }
@@ -69,26 +72,29 @@ class _AdminMainPageState extends State<AdminMainPage> {
 
   final List<Widget> _pages = [
     const HomeAdminPage(),
-    const SearchPage(),
-    const LoginPage(),
+    // Não terá página específica para "Sair"
   ];
 
   void _onTabTapped(int index) {
-    setState(() => _currentIndex = index);
+    if (index == 1) {
+      // Botão "Sair" — executa logout
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const MainScreen()),
+        (route) => false,
+      );
+    } else {
+      setState(() => _currentIndex = index);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: _pages[_currentIndex],
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: _onTabTapped,
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.home), label: 'Início'),
-          NavigationDestination(icon: Icon(Icons.search), label: 'Pesquisa'),
-          NavigationDestination(icon: Icon(Icons.logout), label: 'Sair'),
-        ],
+      bottomNavigationBar: AdminNavBar(
+        currentIndex: _currentIndex,
+        onTabTapped: _onTabTapped,
       ),
     );
   }
@@ -193,45 +199,6 @@ class HomeAdminPage extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class SearchPage extends StatelessWidget {
-  const SearchPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Funcionalidade de Pesquisa (a implementar)'),
-    );
-  }
-}
-
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
-
-  void _logout(BuildContext context) {
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (_) => const MainScreen()),
-      (route) => false,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: ElevatedButton.icon(
-        onPressed: () => _logout(context),
-        icon: const Icon(Icons.logout),
-        label: const Text('Sair do Painel'),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.redAccent,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        ),
       ),
     );
   }

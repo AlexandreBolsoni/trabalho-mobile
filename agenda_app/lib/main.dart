@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'screens/administrativo/admin_page.dart';
-import 'widgets/card_login.dart'; // ← Importa o card unificado
-import 'widgets/card_home.dart';
+import 'widgets/bottonNavBar.dart';
+
+// Importa as telas separadas
+import 'screens/home/home_screen.dart';
+import 'screens/pesquisa/pesquisa_screen.dart';
+import 'screens/login/login_screen.dart';
 
 void main() {
   runApp(const ClinicaApp());
@@ -66,7 +69,7 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _pages = [
     const HomeScreen(),
-    const SearchScreen(),
+    const PesquisaScreen(),
     const LoginScreen(),
   ];
 
@@ -78,53 +81,10 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _pages[_currentIndex],
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: _onTabTapped,
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.home), label: 'Início'),
-          NavigationDestination(icon: Icon(Icons.search), label: 'Pesquisa'),
-          NavigationDestination(icon: Icon(Icons.login), label: 'Login'),
-        ],
+      bottomNavigationBar: BottomNavBar(
+        currentIndex: _currentIndex,
+        onTabTapped: _onTabTapped,
       ),
-    );
-  }
-}
-
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return HomeWidget();
-  }
-}
-
-class SearchScreen extends StatelessWidget {
-  const SearchScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Pesquisa', style: TextStyle(fontSize: 20)),
-    );
-  }
-}
-
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
-
-  void _handleLogin(BuildContext context) {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const AdminHomeScreen()),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return LoginCard(
-      onSuccess: () => _handleLogin(context),
     );
   }
 }
